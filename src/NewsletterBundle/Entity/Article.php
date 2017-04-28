@@ -84,5 +84,10 @@ class Article
         return $this->body;
     }
 
+    public function isNew()
+    {
+        return $this->id === null;
+    }
+
 
 }

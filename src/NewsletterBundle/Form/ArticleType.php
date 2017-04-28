@@ -35,12 +35,12 @@ class ArticleType extends AbstractType
      */
     public function getBlockPrefix()
     {
-        return 'newsletterbundle_article';
+        return '';
     }
 
     public function getName()
     {
-        return 'article';
+        return '';
     }
 
 
