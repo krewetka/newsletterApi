@@ -14,26 +14,27 @@ class Article
 
     /**
      * @var int
-     *
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @Assert\Type("integer")
      */
     protected $id;
 
     /**
      * @var string
-     *
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
+     * @Assert\Type("string")
      */
     protected $title;
 
     /**
      * @var string
-     *
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
+     * @Assert\Type("string")
+     *
      */
     protected $body;
 

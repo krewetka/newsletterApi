@@ -11,12 +11,14 @@ use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations\View as AnnotationView;
 use Symfony\Component\HttpFoundation\Response;
 
+
 class NewsletterController extends FOSRestController
 {
 
     /**
+     * @AnnotationView
      * @ApiDoc(
-     *  description="Returns a collection of Object",
+     *  description="Returns an article by id",
      *  requirements={
      *      {
      *          "name"="article",
@@ -24,12 +26,13 @@ class NewsletterController extends FOSRestController
      *          "requirement"="\d+",
      *          "description"="id of article to return"
      *      }
-     *  }
+     *  },
+     *  input="NewsletterBundle\Entity\Article",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *         404="Returned when the article is not found"
+     *    }
      * )
-     * @param Article $article
-     * @return Article
-     *
-     * @AnnotationView
      */
     public function getArticleAction(Article $article)
     {
@@ -38,6 +41,12 @@ class NewsletterController extends FOSRestController
 
     /**
      * @AnnotationView
+     * @ApiDoc(
+     *  description="Returns all articles",
+     *  statusCodes={
+     *         200="Returned when successful",
+     *   }
+     * )
      */
     public function getArticlesAction()
     {
@@ -51,6 +60,14 @@ class NewsletterController extends FOSRestController
 
     /**
      * @AnnotationView
+     * @ApiDoc(
+     *  description="Creates article",
+     *  input="NewsletterBundle\Form\ArticleType",
+     *  statusCodes={
+     *         201="Returned when successfully created",
+     *         400="Returned in case of error"
+     *    }
+     * )
      */
     public function postArticleAction(Request $request){
 
@@ -62,6 +79,22 @@ class NewsletterController extends FOSRestController
 
     /**
      * @AnnotationView
+     * @ApiDoc(
+     *  description="Updates an article",
+     *  requirements={
+     *      {
+     *          "name"="article",
+     *          "dataType"="integer",
+     *          "requirement"="\d+",
+     *          "description"="id of article to update"
+     *      }
+     *  },
+     *  statusCodes={
+     *      204="Returned when successfully updated",
+     *      404="Returned when the article is not found"
+     * },
+     * input="NewsletterBundle\Form\ArticleType"
+     * )
      */
     public function  putArticleAction(Article $article, Request $request){
 
@@ -70,6 +103,21 @@ class NewsletterController extends FOSRestController
 
     /**
      * @AnnotationView(statusCode=204)
+     * @ApiDoc(
+     *  description="Delete article",
+     *  requirements={
+     *      {
+     *          "name"="article",
+     *          "dataType"="integer",
+     *          "requirement"="\d+",
+     *          "description"="id of article to remove"
+     *      }
+     *  },
+     *  statusCodes={
+     *         204="Returned when successfully deleted",
+     *         404="Returned when the article is not found"
+     *    }
+     * )
      */
     public function deleteArticleAction(Article $article)
     {
