@@ -7,13 +7,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="NewsletterBundle\Repository\ArticleRepository")
  */
 class Article
 {
 
     /**
-     * @var int
      * @ORM\Id
      * @ORM\Column(type="integer")
      * @ORM\GeneratedValue(strategy="AUTO")
@@ -22,7 +21,6 @@ class Article
     protected $id;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
      * @Assert\Type("string")
@@ -30,7 +28,6 @@ class Article
     protected $title;
 
     /**
-     * @var string
      * @ORM\Column(type="string")
      * @Assert\NotBlank()
      * @Assert\Type("string")
@@ -38,33 +35,34 @@ class Article
      */
     protected $body;
 
-    public function __construct($title = '', $body = '')
-    {
-        $this->title = $title;
-        $this->body = $body;
-    }
 
     /**
      * @param string $title
+     * @return $this
      */
 
     public function setTitle(string $title)
     {
         $this->title = $title;
+
+        return $this;
     }
 
     /**
      * @param string $body
+     * @return $this
      */
     public function setBody(string $body)
     {
         $this->body = $body;
+
+        return $this;
     }
 
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId()
     {
         return $this->id;
     }
@@ -72,7 +70,7 @@ class Article
     /**
      * @return string
      */
-    public function getTitle(): string
+    public function getTitle()
     {
         return $this->title;
     }
@@ -80,14 +78,9 @@ class Article
     /**
      * @return string
      */
-    public function getBody(): string
+    public function getBody()
     {
         return $this->body;
-    }
-
-    public function isNew()
-    {
-        return $this->id === null;
     }
 
 

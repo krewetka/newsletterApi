@@ -5,12 +5,10 @@ namespace NewsletterBundle\Controller;
 use FOS\RestBundle\Controller\FOSRestController;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use NewsletterBundle\Entity\Article;
-use FOS\RestBundle\View\View ;
+use FOS\RestBundle\View\View;
 use NewsletterBundle\Form\ArticleType;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations\View as AnnotationView;
-use Symfony\Component\HttpFoundation\Response;
-
 
 class NewsletterController extends FOSRestController
 {
@@ -40,7 +38,6 @@ class NewsletterController extends FOSRestController
     }
 
     /**
-     * @AnnotationView
      * @ApiDoc(
      *  description="Returns all articles",
      *  statusCodes={
@@ -50,16 +47,13 @@ class NewsletterController extends FOSRestController
      */
     public function getArticlesAction()
     {
-        $articles = $this
-            ->getDoctrine()
-            ->getRepository(Article::class)
-            ->findAll();
+        $repository = $this->get('newsletter.entity.article_repository');
+        $articles = $repository->getAllArticles();
 
         return $articles;
     }
 
     /**
-     * @AnnotationView
      * @ApiDoc(
      *  description="Creates article",
      *  input="NewsletterBundle\Form\ArticleType",
@@ -69,16 +63,26 @@ class NewsletterController extends FOSRestController
      *    }
      * )
      */
-    public function postArticleAction(Request $request){
+    public function postArticleAction(Request $request)
+    {
 
         $article = new Article();
 
-       return $this->processForm($article, $request);
+        $form = $this->processRequest($request, $article);
 
+        if (!$form->isValid()) {
+            return View::create($form, 400);
+        }
+
+        $repository = $this->get('newsletter.entity.article_repository');
+        $repository->add($article);
+
+        $view = $this->view($article, 201);
+
+        return $this->handleView($view);
     }
 
     /**
-     * @AnnotationView
      * @ApiDoc(
      *  description="Updates an article",
      *  requirements={
@@ -96,13 +100,23 @@ class NewsletterController extends FOSRestController
      * input="NewsletterBundle\Form\ArticleType"
      * )
      */
-    public function  putArticleAction(Article $article, Request $request){
+    public function putArticleAction(Article $article, Request $request)
+    {
 
-        return $this->processForm($article, $request);
+        $form = $this->processRequest($request, $article);
+
+        if (!$form->isValid()) {
+            return $this->view($form, 400);
+        }
+
+        $repository = $this->get('newsletter.entity.article_repository');
+        $repository->save($article);
+
+        $view = $this->view($article, 200);
+        return $this->handleView($view);
     }
 
     /**
-     * @AnnotationView(statusCode=204)
      * @ApiDoc(
      *  description="Delete article",
      *  requirements={
@@ -121,60 +135,26 @@ class NewsletterController extends FOSRestController
      */
     public function deleteArticleAction(Article $article)
     {
-        $this->removeAndFlush($article);
+
+        $repo = $this->get('newsletter.entity.article_repository');
+
+        $repo->remove($article);
+
+        $view = $this->view(null, 204);
+        return $this->handleView($view);
     }
 
-    private function processForm(Article $article, Request $request)
+    /**
+     * @param Request $request
+     * @param $article
+     * @return \Symfony\Component\Form\Form
+     */
+    public function processRequest(Request $request, $article): \Symfony\Component\Form\Form
     {
-
-        $statusCode = $article->isNew() ? 201 : 204;
-
         $form = $this->createForm(ArticleType::class, $article, array('method' => $request->getMethod()));
-
         $form->handleRequest($request);
 
-       //$form->submit( $request->request->all());
-
-        if ( $form->isSubmitted() && $form->isValid()) {
-
-            $this->persistAndFlush($article);
-
-            $response = new Response();
-            $response->setStatusCode($statusCode);
-
-            if (201 === $statusCode) {
-                $response->headers->set('Location',
-                    $this->generateUrl(
-                        'get_article', array('article' => $article->getId()),
-                        true // absolute
-                    )
-                );
-            }
-
-            return $response;
-        }
-
-        return View::create($form, 400);
-    }
-
-    /**
-     * @param Article $article
-     */
-    private function persistAndFlush(Article $article)
-    {
-        $manager = $this->getDoctrine()->getManager();
-        $manager->persist($article);
-        $manager->flush();
-    }
-
-    /**
-     * @param Article $article
-     */
-    public function removeAndFlush(Article $article)
-    {
-        $manager = $this->getDoctrine()->getManager();
-        $manager->remove($article);
-        $manager->flush();
+        return $form;
     }
 
 

@@ -1,4 +1,6 @@
 services:
-#    newsletter.example:
-#        class: NewsletterBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+  newsletter.entity.article_repository:
+    class: NewsletterBundle\Repository\ArticleRepository
+    factory: ['@doctrine.orm.default_entity_manager', getRepository]
+    arguments:
+        - NewsletterBundle\Entity\Article
