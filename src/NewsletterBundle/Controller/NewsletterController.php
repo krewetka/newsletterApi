@@ -9,22 +9,25 @@ use FOS\RestBundle\View\View;
 use NewsletterBundle\Form\ArticleType;
 use Symfony\Component\HttpFoundation\Request;
 use FOS\RestBundle\Controller\Annotations\View as AnnotationView;
+use FOS\RestBundle\Request\ParamFetcherInterface;
+use FOS\RestBundle\Controller\Annotations;
 
 class NewsletterController extends FOSRestController
 {
+
     /**
      * @AnnotationView
      * @ApiDoc(
      *  description="Returns an article by id",
+     *  resource=true,
      *  requirements={
      *      {
      *          "name"="article",
      *          "dataType"="integer",
      *          "requirement"="\d+",
      *          "description"="id of article to return"
-     *      }
-     *  },
-     *  input="NewsletterBundle\Entity\Article",
+     *  }},
+     *  output="NewsletterBundle\Entity\Article",
      *  statusCodes={
      *         200="Returned when successful",
      *         404="Returned when the article is not found"
@@ -39,16 +42,23 @@ class NewsletterController extends FOSRestController
 
     /**
      * @ApiDoc(
-     *  description="Returns all articles",
+     *  description="Returns all articles for selected week",
+     *  resource = true,
      *  statusCodes={
      *         200="Returned when successful",
+     *         400="Returned in case of error"
      *   }
      * )
+     *
+     * @Annotations\QueryParam(name="week", strict=true, requirements={"rule" = "[1-9]|[1-4]\d|5[012]", "error_message" = "week number must be between 1 and 52"}, nullable=true, description="week number to select articles")
+     *
      */
-    public function getArticlesAction()
+    public function getArticlesAction(ParamFetcherInterface $paramFetcher)
     {
-        $repository = $this->get('newsletter.entity.article_repository');
-        $articles = $repository->getAllArticles();
+        $all = $paramFetcher->all(true);
+        $week = $paramFetcher->get('week', true);
+        $repository = $this->getArticleRepository();
+        $articles = $repository->getAllArticles($week);
 
         return $articles;
     }
@@ -74,7 +84,7 @@ class NewsletterController extends FOSRestController
             return View::create($form, 400);
         }
 
-        $repository = $this->get('newsletter.entity.article_repository');
+        $repository = $this->getArticleRepository();
         $repository->add($article);
 
         $view = $this->view($article, 201);
@@ -110,7 +120,7 @@ class NewsletterController extends FOSRestController
             return $this->view($form, 400);
         }
 
-        $repository = $this->get('newsletter.entity.article_repository');
+        $repository = $this->getArticleRepository();
         $repository->save($article);
 
         $view = $this->view($article, 200);
@@ -138,7 +148,7 @@ class NewsletterController extends FOSRestController
     public function deleteArticleAction(Article $article)
     {
 
-        $repo = $this->get('newsletter.entity.article_repository');
+        $repo = $this->getArticleRepository();
 
         $repo->remove($article);
 
@@ -148,6 +158,7 @@ class NewsletterController extends FOSRestController
     }
 
     /**
+     * Handle request and form submit
      * @param Request $request
      * @param $article
      * @return \Symfony\Component\Form\Form
@@ -161,6 +172,14 @@ class NewsletterController extends FOSRestController
         //$form->handleRequest($request);
 
         return $form;
+    }
+
+    /**
+     * @return \NewsletterBundle\Repository\ArticleRepository|object
+     */
+    private function getArticleRepository()
+    {
+        return $this->get('newsletter.entity.article_repository');
     }
 
 

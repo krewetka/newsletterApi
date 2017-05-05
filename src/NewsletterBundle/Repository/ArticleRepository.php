@@ -27,11 +27,13 @@ class ArticleRepository extends EntityRepository
         $this->getEntityManager()->flush($entity);
     }
 
-    public function getAllArticles()
+    public function getAllArticles($week = null)
     {
-        $articles = $this->findAll();
+        if ($week !== null) {
+           return  $this->findBy(['week' => $week]);
+        }
 
-        return $articles;
+        return $this->findAll();
     }
 
 }

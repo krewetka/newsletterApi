@@ -37,6 +37,36 @@ class Article
 
 
     /**
+     * @ORM\Column(type="integer")
+     * @Assert\NotBlank()
+     * @Assert\Range(
+     *      min = 1,
+     *      max = 52
+
+     * )
+     */
+    protected $week;
+
+    /**
+     * @return int
+     */
+    public function getWeek()
+    {
+        return $this->week;
+    }
+
+    /**
+     * @param int $week
+     * @return Article
+     */
+    public function setWeek($week)
+    {
+        $this->week = $week;
+
+        return $this;
+    }
+
+    /**
      * @param string $title
      * @return $this
      */

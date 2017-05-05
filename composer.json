@@ -1,5 +1,6 @@
 {
   "name": "root/newsletter",
+  "description": "simple newsletter api",
   "license": "proprietary",
   "type": "project",
   "autoload": {
