@@ -1,10 +1,12 @@
+homepage:
+    path: /
+    defaults:
+        _controller:  FrameworkBundle:Redirect:urlRedirect
+        path: /api/doc
+        permanent: true
 newsletter:
     resource: "@NewsletterBundle/Resources/config/routing.yml"
-    prefix:   /
-
-app:
-    resource: '@AppBundle/Controller/'
-    type: annotation
+    prefix:   /api/
 
 NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"

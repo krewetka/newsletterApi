@@ -1,8 +1,4 @@
-newsletter_homepage:
-    path:     /
-    defaults: { _controller: NewsletterBundle:Default:index }
-
 newsletter:
     resource: "@NewsletterBundle/Controller/NewsletterController.php"
-    prefix: /api/
+    prefix: /
     type: rest

@@ -1,6 +1,5 @@
 imports:
     - { resource: config_dev.yml }
-
 framework:
     test: ~
     session:
@@ -14,3 +13,5 @@ web_profiler:
 
 swiftmailer:
     disable_delivery: true
+
+liip_functional_test: ~

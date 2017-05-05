@@ -41,7 +41,7 @@ class Article
      * @return $this
      */
 
-    public function setTitle(string $title)
+    public function setTitle($title)
     {
         $this->title = $title;
 
@@ -52,7 +52,7 @@ class Article
      * @param string $body
      * @return $this
      */
-    public function setBody(string $body)
+    public function setBody($body)
     {
         $this->body = $body;
 

@@ -12,7 +12,6 @@ use FOS\RestBundle\Controller\Annotations\View as AnnotationView;
 
 class NewsletterController extends FOSRestController
 {
-
     /**
      * @AnnotationView
      * @ApiDoc(
@@ -34,6 +33,7 @@ class NewsletterController extends FOSRestController
      */
     public function getArticleAction(Article $article)
     {
+
         return $article;
     }
 
@@ -70,7 +70,7 @@ class NewsletterController extends FOSRestController
 
         $form = $this->processRequest($request, $article);
 
-        if (!$form->isValid()) {
+        if (!$form->isSubmitted() || !$form->isValid()) {
             return View::create($form, 400);
         }
 
@@ -95,6 +95,7 @@ class NewsletterController extends FOSRestController
      *  },
      *  statusCodes={
      *      204="Returned when successfully updated",
+     *      400="Returned in case of error",
      *      404="Returned when the article is not found"
      * },
      * input="NewsletterBundle\Form\ArticleType"
@@ -105,7 +106,7 @@ class NewsletterController extends FOSRestController
 
         $form = $this->processRequest($request, $article);
 
-        if (!$form->isValid()) {
+        if (!$form->isSubmitted() || !$form->isValid()) {
             return $this->view($form, 400);
         }
 
@@ -113,6 +114,7 @@ class NewsletterController extends FOSRestController
         $repository->save($article);
 
         $view = $this->view($article, 200);
+
         return $this->handleView($view);
     }
 
@@ -141,6 +143,7 @@ class NewsletterController extends FOSRestController
         $repo->remove($article);
 
         $view = $this->view(null, 204);
+
         return $this->handleView($view);
     }
 
@@ -152,7 +155,10 @@ class NewsletterController extends FOSRestController
     public function processRequest(Request $request, $article): \Symfony\Component\Form\Form
     {
         $form = $this->createForm(ArticleType::class, $article, array('method' => $request->getMethod()));
-        $form->handleRequest($request);
+
+        $form->submit($request->request->all());
+
+        //$form->handleRequest($request);
 
         return $form;
     }
